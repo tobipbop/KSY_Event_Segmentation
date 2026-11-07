@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anotátor videí - Záznam časových značek</title>
+    <title>Anotátor videí - Záznam a pojmenování značek</title>
     <!-- Tailwind CSS pro moderní a čistý vzhled -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & JetBrains Mono pro časy -->
@@ -57,7 +57,10 @@
             position: relative !important;
             z-index: 55 !important;
             box-shadow: 0 0 0 4px #6366f1, 0 15px 30px -5px rgba(0, 0, 0, 0.8) !important;
-            pointer-events: none !important; /* Zabránit klikání na prvky během návodu */
+            pointer-events: none !important; /* Zabránit klikání na prvky během návodu kromě inputů */
+        }
+        .tour-highlight input {
+            pointer-events: auto !important;
         }
         #video-container.tour-highlight { background-color: #000 !important; }
         #sidebar-container.tour-highlight { background-color: #0f172a !important; }
@@ -100,7 +103,7 @@
                 <div class="mb-6">
                     <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">Váš úkol</h1>
                     <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
-                        Budete sledovat sérii krátkých videí. Vaším úkolem je <strong>rozdělit</strong> souvislý děj v každém videu <strong>do konkrétních smysluplných událostí</strong> pomocí časových značek (timestampů).<br>
+                        Budete sledovat sérii krátkých videí. Ve dvou různých fázích experimentu budete mít za úkol <strong>rozdělit</strong> souvislý děj na konkrétní události (pomocí časových značek) a následně tyto segmenty také <strong>pojmenovat</strong>.<br>
                     </p>
                 </div>
 
@@ -121,19 +124,8 @@
                     </div>
                 </div>
 
-                <!-- Stručné instrukce k ovládání -->
-                <div class="bg-slate-950/80 border border-slate-800/90 rounded-xl p-4 mb-6 space-y-2.5 text-xs sm:text-sm text-slate-300">
-                    <div class="font-semibold text-white flex items-center gap-2">
-                        <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Jak zaznamenávat události:
-                    </div>
-                    <ul class="space-y-1.5 text-slate-400 list-disc list-inside">
-                        <li>Stiskněte [ENTER / TLAČÍTKO pod videem] v přesný okamžik, kdy jedna událost přechází v jinou.</li>
-                    </ul>
-                </div>
-
                 <!-- Formulář nastavení -->
-                <div class="space-y-6">
+                <div class="space-y-6 mt-8">
                     <!-- Přezdívka -->
                     <div>
                         <label for="nickname-input" class="block text-sm font-medium text-slate-300 mb-2">
@@ -175,6 +167,9 @@
                             <div class="flex items-center space-x-3 overflow-hidden" id="video-header-content">
                                 <span id="video-badge-index" class="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 text-xs font-mono font-semibold px-2.5 py-1 rounded-md flex-shrink-0">
                                     #1
+                                </span>
+                                <span id="video-task-badge" class="bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-2.5 py-1 rounded-md flex-shrink-0 hidden sm:inline-block">
+                                    Značkování
                                 </span>
                                 <h2 id="current-video-title" class="font-semibold text-white truncate text-base sm:text-lg">
                                     nazev_videa.mp4
@@ -263,11 +258,10 @@
                     <!-- Hlavička seznamu -->
                     <div class="p-4 border-b border-slate-800 flex items-center justify-between">
                         <div>
-                            <h3 class="font-bold text-white text-base">Časové značky</h3>
-                            <p class="text-xs text-slate-400"></p>
+                            <h3 class="font-bold text-white text-base">Zaznamenané úseky</h3>
                         </div>
                         <button id="btn-clear-all" onclick="clearCurrentVideoTimestamps()" class="hidden text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/50 px-2.5 py-1.5 rounded-lg transition">
-                            Smazat všechny značky
+                            Smazat vše
                         </button>
                     </div>
 
@@ -352,7 +346,7 @@
                     <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                         <button onclick="copyExportToClipboard()" class="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-3 rounded-xl shadow-lg shadow-indigo-600/20 flex items-center justify-center space-x-2 transition">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
                             </svg>
                             <span>Zkopírovat do schránky</span>
                         </button>
@@ -436,26 +430,37 @@
     <!-- JAVASCRIPT LOGIKA APLIKACE                 -->
     <!-- ========================================== -->
     <script>
+        // Nová struktura videí s rozlišením typu úkolu (timestamp vs naming)
         const EXPERIMENT_VIDEOS = [
             {
-                id: "vid_test",
-                name: "Ukázkové video",
+                id: "vid_test_1",
+                name: "Ukázkové video (Značkování)",
                 src: "./videos/watermarked_preview_making_bed.mp4",
-                isTest: true
+                isTest: true,
+                taskType: "timestamp"
             },
             {
                 id: "vid_01",
-                name: "Video 1",
-                src: "./videos/watermarked_preview_making_bed.mp4"
+                name: "Video 1 (Značkování)",
+                src: "./videos/watermarked_preview_making_bed.mp4",
+                taskType: "timestamp"
+            },
+            {
+                id: "vid_test_2",
+                name: "Ukázkové video (Pojmenování)",
+                src: "./videos/watermarked_preview_morning_coffee.mp4",
+                isTest: true,
+                taskType: "naming"
             },
             {
                 id: "vid_02",
-                name: "Video 2",
-                src: "./videos/watermarked_preview_morning_coffee.mp4"
+                name: "Video 2 (Pojmenování)",
+                src: "./videos/watermarked_preview_morning_coffee.mp4",
+                taskType: "naming"
             }
         ];
 
-        const STORAGE_KEY = 'timestamp_experiment_session_v3';
+        const STORAGE_KEY = 'timestamp_experiment_session_v4';
 
         let state = {
             nickname: '',
@@ -504,7 +509,8 @@
                 name: v.name,
                 src: v.src,
                 isTest: v.isTest || false,
-                timestamps: []
+                taskType: v.taskType || 'timestamp',
+                events: [] // nahrazuje puvodní timestamps, ukládá objekty {time, label}
             }));
 
             saveStateToLocalStorage();
@@ -520,7 +526,7 @@
                 if (saved && saved.nickname && Array.isArray(saved.videos) && saved.videos.length > 0) {
                     const banner = document.getElementById('saved-session-banner');
                     const details = document.getElementById('saved-session-details');
-                    const totalStamps = saved.videos.reduce((acc, v) => acc + (v.timestamps ? v.timestamps.length : 0), 0);
+                    const totalStamps = saved.videos.reduce((acc, v) => acc + (v.events ? v.events.length : 0), 0);
                     details.textContent = `Účastník: ${saved.nickname} • Záznamů: ${totalStamps}`;
                     banner.classList.remove('hidden');
                 }
@@ -586,7 +592,7 @@
 
             document.getElementById('summary-nickname').textContent = state.nickname;
             document.getElementById('summary-video-count').textContent = exportVideos.length;
-            const totalStamps = exportVideos.reduce((sum, v) => sum + v.timestamps.length, 0);
+            const totalStamps = exportVideos.reduce((sum, v) => sum + v.events.length, 0);
             document.getElementById('summary-total-stamps').textContent = totalStamps;
 
             generateExportOutput();
@@ -598,6 +604,15 @@
             
             const realVideosCount = state.videos.filter(v => !v.isTest).length;
             const realVideoIndex = state.videos.slice(0, index + 1).filter(v => !v.isTest).length;
+            
+            const taskBadge = document.getElementById('video-task-badge');
+            if (currentVideo.taskType === 'naming') {
+                taskBadge.textContent = 'Značkování + Pojmenování';
+                taskBadge.className = 'bg-fuchsia-600/20 text-fuchsia-400 border border-fuchsia-500/30 text-xs font-semibold px-2.5 py-1 rounded-md flex-shrink-0 hidden sm:inline-block';
+            } else {
+                taskBadge.textContent = 'Pouze značkování';
+                taskBadge.className = 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-2.5 py-1 rounded-md flex-shrink-0 hidden sm:inline-block';
+            }
 
             if (currentVideo.isTest) {
                 document.getElementById('header-progress').textContent = `Testovací video`;
@@ -710,17 +725,16 @@
             }
         }
 
-
         // =====================================
         // INTERAKTIVNÍ PRŮVODCE (TOUR)
         // =====================================
-        const TOUR_STEPS = [
+        const TOUR_STEPS_TIMESTAMP = [
             {
                 target: 'center',
                 html: `
                     <div class="space-y-4">
-                        <h3 class="font-bold text-white text-lg">Zkušební video – Úkol a Příklad</h3>
-                        <p>Vaším úkolem je <strong>segmentovat video (rozdělit souvislý děj) do menších smysluplných akcí</strong>. Zaznamenejte čas vždy ve chvíli, kdy jedna akce skončí a začne další.</p>
+                        <h3 class="font-bold text-white text-lg">Zkušební video – Záznam časů</h3>
+                        <p>Vaším prvním úkolem je <strong>segmentovat video (rozdělit souvislý děj) do menších smysluplných akcí</strong>. Zaznamenejte čas vždy ve chvíli, kdy jedna akce skončí a začne další.</p>
                         
                         <div class="bg-indigo-950/40 p-4 rounded-xl border border-indigo-500/20 shadow-inner text-left">
                             <h4 class="font-semibold text-indigo-300 mb-2 text-sm">Příklad: Příprava čaje</h4>
@@ -738,7 +752,7 @@
             },
             {
                 target: 'btn-record-timestamp',
-                html: '<p>Toto je hlavní tlačítko. Zaznamená timestamp na aktuální čas videa. Lze použít i klávesu <strong>Enter</strong>.</p>'
+                html: '<p>Toto je hlavní tlačítko. Zaznamená timestamp na aktuální čas videa. Pro zaznamenání timestampu je také možné mačkat klávesu <strong>Enter</strong>.</p>'
             },
             {
                 target: 'video-container',
@@ -746,17 +760,42 @@
             },
             {
                 target: 'custom-timeline',
-                html: '<p>Časová osa ukazuje vaše značky. Kliknutím kamkoliv na osu se plynule přesunete na daný moment ve videu.</p>'
+                html: '<p>Časová osa ukazuje vaše vytvořené značky. Kliknutím kamkoliv na osu se přesunete na daný moment ve videu.</p>'
             },
             {
                 target: 'sidebar-container',
-                html: '<p>Zde uvidíte seznam zaznamenaných časů. Můžete na ně klikat, nebo je v případě chyby rovnou smazat.</p>'
+                html: '<p>Zde uvidíte seznam všech vámi zaznamenaných timestampů. Můžete na ně klikat pro rychlý přesun ve videu, nebo je v případě chyby křížkem smazat. </p>'
+            }
+        ];
+
+        const TOUR_STEPS_NAMING = [
+            {
+                target: 'center',
+                html: `
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-white text-lg">Zkušební video – Pojmenování</h3>
+                        <p>Nyní je Váš úkol rozšířen o pojmenování Vámi zaznamenaných úseků ve videu. Kromě přesného rozdělení děje pomocí časových značek musíte jednotlivé úseky <strong>také stručně pojmenovat</strong>.</p>
+                        <p class="text-[13px] text-indigo-200">Ve chvíli kdy stisknete záznam času (Enter), aplikace vytvoří pro tento úsek textové pole pro název segmentu.</p>
+                    </div>
+                `
+            },
+            {
+                target: 'btn-record-timestamp',
+                html: '<p>Nejprve jako obvykle stiskněte tlačítko nebo <strong>Enter</strong> v místě, kde se mění děj.</p>'
+            },
+            {
+                target: 'sidebar-container',
+                html: '<p>Zde v panelu se pro každý zaznamenaný čas okamžitě zobrazí i <strong>textové pole</strong>. Do něj stručně zapište, jaký děj segment reprezentuje (např. "Zalévá kávu").</p>'
             }
         ];
         
         let currentTourStep = 0;
+        let activeTourSteps = [];
 
         function startTour() {
+            const currentVideo = state.videos[state.currentVideoIndex];
+            activeTourSteps = currentVideo.taskType === 'naming' ? TOUR_STEPS_NAMING : TOUR_STEPS_TIMESTAMP;
+            
             if(!videoPlayer.paused) videoPlayer.pause();
             document.getElementById('tour-overlay').classList.remove('hidden');
             document.getElementById('tour-dialog').classList.remove('hidden');
@@ -772,19 +811,18 @@
 
         function showTourStep() {
             clearTourHighlight();
-            if (currentTourStep >= TOUR_STEPS.length) {
+            if (currentTourStep >= activeTourSteps.length) {
                 endTour();
                 return;
             }
             
-            const step = TOUR_STEPS[currentTourStep];
+            const step = activeTourSteps[currentTourStep];
             const dialog = document.getElementById('tour-dialog');
             
-            document.getElementById('tour-step-count').textContent = `${currentTourStep + 1}/${TOUR_STEPS.length}`;
+            document.getElementById('tour-step-count').textContent = `${currentTourStep + 1}/${activeTourSteps.length}`;
             document.getElementById('tour-text').innerHTML = step.html;
             
             if (step.target === 'center') {
-                // Vycentrování krok 1 na střed
                 setTimeout(() => {
                     const dialogRect = dialog.getBoundingClientRect();
                     const top = Math.max(16, (window.innerHeight / 2) - (dialogRect.height / 2));
@@ -796,7 +834,7 @@
                 const target = document.getElementById(step.target);
                 if (target) {
                     target.classList.add('tour-highlight');
-                    target.scrollIntoView({ behavior: 'auto', block: 'center' });
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
                     setTimeout(() => {
                         const rect = target.getBoundingClientRect();
@@ -817,11 +855,11 @@
                         
                         dialog.style.top = `${top}px`;
                         dialog.style.left = `${left}px`;
-                    }, 10);
+                    }, 350); // Mírně delší zpoždění kvůli smooth scrollingu
                 }
             }
             
-            document.getElementById('tour-next-btn').textContent = (currentTourStep === TOUR_STEPS.length - 1) ? 'Zavřít' : 'Další';
+            document.getElementById('tour-next-btn').textContent = (currentTourStep === activeTourSteps.length - 1) ? 'Rozumím, jdeme na to' : 'Další krok';
         }
 
         function nextTourStep() {
@@ -859,16 +897,24 @@
 
             const currentTime = Number(videoPlayer.currentTime.toFixed(3));
 
-            const exists = currentVideo.timestamps.some(t => Math.abs(t - currentTime) < 0.04);
+            const exists = currentVideo.events.some(e => Math.abs(e.time - currentTime) < 0.04);
             if (!exists) {
-                currentVideo.timestamps.push(currentTime);
-                currentVideo.timestamps.sort((a, b) => a - b);
+                currentVideo.events.push({ time: currentTime, label: "" });
+                currentVideo.events.sort((a, b) => a.time - b.time);
             }
 
             triggerVisualFeedback(currentTime);
             renderTimestampsList(currentTime);
             renderTimelinePins();
             saveStateToLocalStorage();
+        }
+        
+        function updateLabel(index, value) {
+            const currentVideo = state.videos[state.currentVideoIndex];
+            if (currentVideo && currentVideo.events[index]) {
+                currentVideo.events[index].label = value;
+                saveStateToLocalStorage();
+            }
         }
 
         function triggerVisualFeedback(timeValue) {
@@ -900,7 +946,7 @@
         function removeTimestamp(index) {
             const currentVideo = state.videos[state.currentVideoIndex];
             if (!currentVideo) return;
-            currentVideo.timestamps.splice(index, 1);
+            currentVideo.events.splice(index, 1);
             renderTimestampsList();
             renderTimelinePins();
             saveStateToLocalStorage();
@@ -909,7 +955,7 @@
         function clearCurrentVideoTimestamps() {
             const currentVideo = state.videos[state.currentVideoIndex];
             if (!currentVideo) return;
-            currentVideo.timestamps = [];
+            currentVideo.events = [];
             renderTimestampsList();
             renderTimelinePins();
             saveStateToLocalStorage();
@@ -923,7 +969,7 @@
             const container = document.getElementById('timestamps-list');
             const clearAllBtn = document.getElementById('btn-clear-all');
             const currentVideo = state.videos[state.currentVideoIndex];
-            const stamps = currentVideo ? currentVideo.timestamps : [];
+            const stamps = currentVideo ? currentVideo.events : [];
 
             document.getElementById('pins-count-label').textContent = `${stamps.length} ${stamps.length === 1 ? 'značka' : (stamps.length >= 2 && stamps.length <= 4 ? 'značky' : 'značek')}`;
 
@@ -944,35 +990,41 @@
 
             clearAllBtn.classList.remove('hidden');
 
-            container.innerHTML = stamps.map((time, idx) => {
+            container.innerHTML = stamps.map((ev, idx) => {
+                const time = ev.time;
                 const isHighlighted = highlightTime !== null && Math.abs(time - highlightTime) < 0.01;
+                
+                const labelInput = currentVideo.taskType === 'naming' ? 
+                    `<input type="text" value="${ev.label.replace(/"/g, '&quot;')}" oninput="updateLabel(${idx}, this.value)" placeholder="Pojmenujte segment..." class="mt-2.5 w-full bg-slate-950 border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-lg px-3 py-2 text-[13px] text-white placeholder-slate-500 outline-none transition">` 
+                    : '';
+
                 return `
-                    <div id="stamp-row-${idx}" class="group flex items-center justify-between p-2.5 rounded-xl border ${isHighlighted ? 'bg-indigo-950/60 border-indigo-500/60' : 'bg-slate-950/70 border-slate-800/90 hover:border-slate-700'} transition">
-                        <button onclick="seekToTimestamp(${time})" class="flex-1 flex items-center space-x-3 text-left">
-                            <span class="w-6 h-6 rounded-lg bg-slate-800 text-slate-400 font-mono text-xs flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition">
-                                ${idx + 1}
-                            </span>
-                            <div>
-                                <div class="font-mono font-semibold text-sm text-white group-hover:text-indigo-300 transition">
-                                    ${formatTime(time)}
+                    <div id="stamp-row-${idx}" class="group flex flex-col p-3 rounded-xl border ${isHighlighted ? 'bg-indigo-950/60 border-indigo-500/60' : 'bg-slate-900 border-slate-700 hover:border-slate-600'} transition">
+                        <div class="flex items-center justify-between w-full">
+                            <button onclick="seekToTimestamp(${time})" class="flex-1 flex items-center space-x-3 text-left">
+                                <span class="w-6 h-6 rounded-lg bg-slate-800 text-slate-400 font-mono text-xs flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition">
+                                    ${idx + 1}
+                                </span>
+                                <div>
+                                    <div class="font-mono font-semibold text-sm text-white group-hover:text-indigo-300 transition">
+                                        ${formatTime(time)}
+                                    </div>
                                 </div>
-                                <div class="font-mono text-[11px] text-slate-500">
-                                    ${time.toFixed(2)} s
-                                </div>
-                            </div>
-                        </button>
-                        <button onclick="removeTimestamp(${idx})" title="Kliknutím smazat" 
-                            class="text-slate-500 hover:text-rose-400 hover:bg-rose-950/40 p-2 rounded-lg transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
+                            </button>
+                            <button onclick="removeTimestamp(${idx})" title="Kliknutím smazat" 
+                                class="text-slate-500 hover:text-rose-400 hover:bg-rose-950/40 p-2 rounded-lg transition ml-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        ${labelInput}
                     </div>
                 `;
             }).join('');
 
             if (highlightTime !== null) {
-                const newIdx = stamps.findIndex(t => Math.abs(t - highlightTime) < 0.01);
+                const newIdx = stamps.findIndex(e => Math.abs(e.time - highlightTime) < 0.01);
                 const row = document.getElementById(`stamp-row-${newIdx}`);
                 if (row) row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
@@ -984,15 +1036,15 @@
             const dur = videoPlayer.duration;
             if (!currentVideo || !dur || !isFinite(dur) || dur <= 0) return;
 
-            currentVideo.timestamps.forEach((time, idx) => {
-                const pct = Math.min(100, Math.max(0, (time / dur) * 100));
+            currentVideo.events.forEach((ev, idx) => {
+                const pct = Math.min(100, Math.max(0, (ev.time / dur) * 100));
                 const pin = document.createElement('div');
                 pin.className = "absolute top-0 bottom-0 w-1 bg-indigo-500 hover:bg-rose-400 pointer-events-auto cursor-pointer transition-all hover:w-1.5 z-20 group";
                 pin.style.left = `${pct}%`;
-                pin.title = `#${idx + 1}: ${formatTime(time)}`;
+                pin.title = `#${idx + 1}: ${formatTime(ev.time)} ${ev.label ? '- ' + ev.label : ''}`;
                 pin.onclick = (e) => {
                     e.stopPropagation();
-                    seekToTimestamp(time);
+                    seekToTimestamp(ev.time);
                 };
 
                 const head = document.createElement('div');
@@ -1023,6 +1075,9 @@
                 const annotateScreen = document.getElementById('screen-annotate');
                 if (annotateScreen.classList.contains('hidden')) return;
                 if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+                
+                // Ignorovat, pokud svítí Tour lišta (aby se v prubehu navodu nezaznamenal cas z enteru)
+                if(!document.getElementById('tour-overlay').classList.contains('hidden')) return;
 
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -1073,19 +1128,22 @@
                 output += `========================================\n\n`;
 
                 exportVideos.forEach((v, i) => {
-                    output += `Video ${i + 1}: ${v.name}\n`;
-                    if (v.timestamps.length === 0) {
+                    output += `Video ${i + 1}: ${v.name} (${v.taskType === 'naming' ? 'Značkování a pojmenování' : 'Pouze značkování'})\n`;
+                    if (v.events.length === 0) {
                         output += `  (Žádné značky)\n`;
                     } else {
-                        const formattedList = v.timestamps.map(t => formatTime(t)).join(', ');
-                        output += `  Značky (${v.timestamps.length}): ${formattedList}\n`;
+                        output += `  Značky (${v.events.length}):\n`;
+                        v.events.forEach((ev, idx) => {
+                            const lbl = ev.label ? ` - "${ev.label}"` : '';
+                            output += `    ${idx + 1}. ${formatTime(ev.time)} (${ev.time.toFixed(3)}s)${lbl}\n`;
+                        });
                     }
                     output += `\n`;
                 });
             } else if (fmt === 'seconds') {
                 output += `Přezdívka: ${state.nickname}\n\n`;
                 exportVideos.forEach((v) => {
-                    const secList = v.timestamps.map(t => `${t.toFixed(2)}s`).join(', ');
+                    const secList = v.events.map(ev => `${ev.time.toFixed(2)}s${ev.label ? `[${ev.label}]` : ''}`).join(', ');
                     output += `${v.name}: ${secList || 'žádné'}\n`;
                 });
             } else if (fmt === 'json') {
@@ -1095,19 +1153,24 @@
                     videos: exportVideos.map((v, idx) => ({
                         index: idx + 1,
                         videoName: v.name,
-                        timestampsSeconds: v.timestamps,
-                        timestampsFormatted: v.timestamps.map(t => formatTime(t))
+                        taskType: v.taskType,
+                        events: v.events.map(ev => ({
+                            timeSeconds: ev.time,
+                            timeFormatted: formatTime(ev.time),
+                            label: ev.label
+                        }))
                     }))
                 };
                 output = JSON.stringify(payload, null, 2);
             } else if (fmt === 'csv') {
-                output = "prezdivka,video_index,video_nazev,zaznam_index,zaznam_sekundy,zaznam_formatovany\n";
+                output = "prezdivka,video_index,video_nazev,typ_ukolu,zaznam_index,zaznam_sekundy,zaznam_formatovany,nazev_segmentu\n";
                 exportVideos.forEach((v, vIdx) => {
-                    if (v.timestamps.length === 0) {
-                        output += `"${state.nickname}",${vIdx + 1},"${v.name.replace(/"/g, '""')}","","",""\n`;
+                    if (v.events.length === 0) {
+                        output += `"${state.nickname}",${vIdx + 1},"${v.name.replace(/"/g, '""')}","${v.taskType}","","","",""\n`;
                     } else {
-                        v.timestamps.forEach((t, tIdx) => {
-                            output += `"${state.nickname}",${vIdx + 1},"${v.name.replace(/"/g, '""')}",${tIdx + 1},${t.toFixed(3)},${formatTime(t)}\n`;
+                        v.events.forEach((ev, evIdx) => {
+                            const safeLabel = ev.label ? ev.label.replace(/"/g, '""') : '';
+                            output += `"${state.nickname}",${vIdx + 1},"${v.name.replace(/"/g, '""')}","${v.taskType}",${evIdx + 1},${ev.time.toFixed(3)},"${formatTime(ev.time)}","${safeLabel}"\n`;
                         });
                     }
                 });
@@ -1142,7 +1205,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `timestampy_${safeNick}.${ext}`;
+            a.download = `vysledky_${safeNick}.${ext}`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
