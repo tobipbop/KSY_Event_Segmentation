@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Annotator - Záznam časových značek</title>
+    <title>Anotátor videí - Záznam časových značek</title>
     <!-- Tailwind CSS pro moderní a čistý vzhled -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & JetBrains Mono pro časy -->
@@ -22,7 +22,6 @@
         }
     </script>
     <style>
-        /* Vlastní styly pro posuvníky a animace */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -53,9 +52,18 @@
         .animate-slide-down {
             animation: slideDown 0.4s ease-out forwards;
         }
+        /* CSS Třída pro interaktivního průvodce - zvýrazní element nad ztmavením */
+        .tour-highlight {
+            position: relative !important;
+            z-index: 55 !important;
+            box-shadow: 0 0 0 4px #6366f1, 0 15px 30px -5px rgba(0, 0, 0, 0.8) !important;
+            pointer-events: none !important; /* Zabránit klikání na prvky během návodu */
+        }
+        #video-container.tour-highlight { background-color: #000 !important; }
+        #sidebar-container.tour-highlight { background-color: #0f172a !important; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white overflow-x-hidden">
 
     <!-- Horní lišta / Navigace -->
     <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
@@ -65,14 +73,14 @@
                     <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
-                    <span class="text-slate-400 hidden sm:inline">Nickname:</span>
+                    <span class="text-slate-400 hidden sm:inline">Přezdívka:</span>
                     <span id="header-nickname" class="font-semibold text-white"></span>
                 </div>
                 <div class="flex items-center space-x-2 bg-indigo-950/60 border border-indigo-800/60 px-3 py-1.5 rounded-lg">
                     <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
                     <span id="header-progress" class="font-medium text-indigo-300"></span>
                 </div>
-                <button onclick="openResetModal()" title="End and reset" class="text-slate-400 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-800 transition">
+                <button onclick="openResetModal()" title="Ukončit a resetovat" class="text-slate-400 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-800 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                     </svg>
@@ -90,9 +98,9 @@
         <section id="screen-start" class="max-w-2xl mx-auto mt-4 sm:mt-10">
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
                 <div class="mb-6">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">Your task</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">Váš úkol</h1>
                     <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
-                        You will watch a series of short videos. Your goal is to <strong>divide</strong> the continuous action in each video <strong>into specific meaningful events</strong> using timestamps.<br>
+                        Budete sledovat sérii krátkých videí. Vaším úkolem je <strong>rozdělit</strong> souvislý děj v každém videu <strong>do konkrétních smysluplných událostí</strong> pomocí časových značek (timestampů).<br>
                     </p>
                 </div>
 
@@ -117,10 +125,10 @@
                 <div class="bg-slate-950/80 border border-slate-800/90 rounded-xl p-4 mb-6 space-y-2.5 text-xs sm:text-sm text-slate-300">
                     <div class="font-semibold text-white flex items-center gap-2">
                         <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        How to mark events:
+                        Jak zaznamenávat události:
                     </div>
                     <ul class="space-y-1.5 text-slate-400 list-disc list-inside">
-                        <li>Press [ENTER / BUTTON under the video] at the exact moment one event changes into another.</li>
+                        <li>Stiskněte [ENTER / TLAČÍTKO pod videem] v přesný okamžik, kdy jedna událost přechází v jinou.</li>
                     </ul>
                 </div>
 
@@ -129,20 +137,20 @@
                     <!-- Přezdívka -->
                     <div>
                         <label for="nickname-input" class="block text-sm font-medium text-slate-300 mb-2">
-                            Nickname (don't use real names) <span class="text-rose-500">*</span>
+                            Přezdívka (nepoužívejte skutečné jméno) <span class="text-rose-500">*</span>
                         </label>
-                        <input type="text" id="nickname-input" placeholder="Nickname" 
+                        <input type="text" id="nickname-input" placeholder="Vaše přezdívka" 
                             class="w-full bg-slate-950 border border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl px-4 py-3 text-white placeholder-slate-500 outline-none transition"
                             onkeydown="if(event.key === 'Enter') startSession()">
                         <p id="nickname-error" class="hidden text-rose-400 text-xs mt-2 flex items-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Please, enter a nickname for anonymous identification.
+                            Zadejte prosím přezdívku pro anonymní identifikaci.
                         </p>
                     </div>
 
                     <!-- Tlačítko Spustit -->
                     <button onclick="startSession()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-indigo-600/25 flex items-center justify-center space-x-2 transition duration-150">
-                        <span>Start experiment</span>
+                        <span>Spustit experiment</span>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                         </svg>
@@ -158,22 +166,11 @@
         <section id="screen-annotate" class="hidden">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
-                <!-- Levá část: Přehrávač, Timeline a Tlačítko záznamu (8 sloupců na velkých obrazovkách) -->
+                <!-- Levá část: Přehrávač, Timeline, Tlačítka a Ovládání pod ním (8 sloupců) -->
                 <div class="lg:col-span-8 flex flex-col space-y-4">
-                    
+
                     <!-- Hlavička aktuálního videa -->
                     <div class="bg-slate-900 border border-slate-800 rounded-xl flex flex-col relative overflow-hidden">
-                        
-                        <!-- Upozornění pro testovací video -->
-                        <div id="test-video-banner" class="hidden bg-amber-500/20 border-b border-amber-500/40 px-4 py-3 flex-col sm:flex-row items-center justify-center gap-3 animate-slide-down">
-                            <svg class="w-6 h-6 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                            </svg>
-                            <div class="text-amber-200 text-sm text-center sm:text-left leading-relaxed">
-                                <strong class="font-bold text-amber-100 uppercase tracking-wide">Zkušební video:</strong> Vaším úkolem je <strong>segmentovat toto video (rozdělit souvislý děj) do menších oddělených akcí</strong>. Zaznamenejte čas vždy, když jedna akce skončí a začne další. Zkuste si to, tyto výsledky se neukládají.
-                            </div>
-                        </div>
-
                         <div class="px-4 py-3 flex items-center justify-between w-full">
                             <div class="flex items-center space-x-3 overflow-hidden" id="video-header-content">
                                 <span id="video-badge-index" class="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 text-xs font-mono font-semibold px-2.5 py-1 rounded-md flex-shrink-0">
@@ -189,11 +186,20 @@
                         </div>
                     </div>
 
-                    <!-- Kontejner videa (bez nativních controls, aby Mezerník nepozastavoval video, kliknutí na obrazovku spustí/pozastaví) -->
-                    <div class="relative bg-black rounded-2xl overflow-hidden border border-slate-800 shadow-2xl aspect-video flex items-center justify-center group">
+                    <!-- Kontejner videa -->
+                    <div id="video-container" class="relative bg-black rounded-2xl overflow-hidden border border-slate-800 shadow-2xl aspect-video flex items-center justify-center group">
                         <video id="video-player" onclick="togglePlayPause()" class="w-full h-full max-h-[65vh] object-contain cursor-pointer" playsinline tabindex="-1"></video>
                         
-                        <!-- Vizuální indikátor při zaznamenání timestampu (probliknutí v rohu videa) -->
+                        <!-- Ztmavení a ikona Play při pozastavení -->
+                        <div id="video-paused-overlay" class="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300">
+                            <div class="bg-white/10 backdrop-blur-md p-5 rounded-full border border-white/20 shadow-2xl">
+                                <svg class="w-12 h-12 text-white ml-1 opacity-90" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Vizuální indikátor při zaznamenání timestampu -->
                         <div id="video-flash-overlay" class="pointer-events-none absolute inset-0 border-4 border-indigo-500 rounded-2xl opacity-0 transition-opacity duration-200"></div>
                         <div id="video-toast-badge" class="pointer-events-none absolute top-4 right-4 bg-indigo-600/95 text-white font-mono text-sm font-semibold px-3 py-1.5 rounded-lg shadow-lg opacity-0 transform -translate-y-2 transition-all duration-200 flex items-center space-x-1.5">
                             <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
@@ -206,11 +212,11 @@
                         <div class="flex flex-wrap justify-between items-center text-xs text-slate-400 gap-2">
                             <span class="font-medium text-slate-300 flex items-center gap-1.5">
                                 <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                Video timeline (click to move playback)
+                                Časová osa videa (kliknutím se přesunete v přehrávání)
                             </span>
                             <div class="flex items-center space-x-3">
-                                <button onclick="skipTime(-5); this.blur();" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded transition font-mono" title="Move 5 seconds back">-5s</button>
-                                <button onclick="skipTime(5); this.blur();" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded transition font-mono" title="Move 5 seconds forward">+5s</button>
+                                <button onclick="skipTime(-5); this.blur();" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded transition font-mono" title="Posunout o 5 sekund vzad">-5s</button>
+                                <button onclick="skipTime(5); this.blur();" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded transition font-mono" title="Posunout o 5 sekund vpřed">+5s</button>
                                 <span id="pins-count-label" class="text-indigo-400 font-medium">0 značek</span>
                             </div>
                         </div>
@@ -233,9 +239,9 @@
                         <button id="btn-record-timestamp" onclick="recordTimestamp(); this.blur();" 
                             class="sm:col-span-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 active:scale-[0.99] text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-indigo-600/25 flex items-center justify-center space-x-3 transition-all group border border-indigo-400/20">
                             <div class="w-3.5 h-3.5 rounded-full bg-rose-400 group-hover:scale-125 transition-transform shadow-sm shadow-rose-500"></div>
-                            <span class="text-lg tracking-wide">Mark timestamp</span>
+                            <span class="text-lg tracking-wide">Zaznamenat značku</span>
                             <kbd class="hidden sm:inline-block ml-2 px-2.5 py-1 text-xs font-mono bg-black/30 text-indigo-200 rounded-md border border-white/10">
-                                Enter / Click Here
+                                Enter / Klikněte sem
                             </kbd>
                         </button>
 
@@ -248,19 +254,20 @@
                             <span id="text-play-toggle" class="text-sm">Spustit video</span>
                         </button>
                     </div>
+
                 </div>
 
                 <!-- Pravá část: Seznam zaznamenaných timestampů a potvrzení (4 sloupce) -->
-                <div class="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col h-[520px] lg:h-[calc(100vh-9rem)] max-h-[720px] shadow-xl">
+                <div id="sidebar-container" class="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col h-[520px] lg:h-[calc(100vh-9rem)] max-h-[720px] shadow-xl">
                     
                     <!-- Hlavička seznamu -->
                     <div class="p-4 border-b border-slate-800 flex items-center justify-between">
                         <div>
-                            <h3 class="font-bold text-white text-base">Timestamps</h3>
+                            <h3 class="font-bold text-white text-base">Časové značky</h3>
                             <p class="text-xs text-slate-400"></p>
                         </div>
                         <button id="btn-clear-all" onclick="clearCurrentVideoTimestamps()" class="hidden text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/50 px-2.5 py-1.5 rounded-lg transition">
-                            Erase all timestamps
+                            Smazat všechny značky
                         </button>
                     </div>
 
@@ -274,13 +281,13 @@
                         <div class="flex justify-between items-center text-xs text-slate-400 mb-2">
                             <button id="btn-prev-video" onclick="goToPreviousVideo()" class="text-slate-400 hover:text-white flex items-center gap-1 disabled:opacity-30 disabled:pointer-events-none transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                                Previous video
+                                Předchozí video
                             </button>
                         </div>
 
                         <button id="btn-next-video" onclick="confirmAndNextVideo()" 
                             class="w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3.5 px-5 rounded-xl shadow-lg shadow-emerald-600/20 flex items-center justify-center space-x-2 transition">
-                            <span id="btn-next-video-text">Submit and go to next video</span>
+                            <span id="btn-next-video-text">Odeslat a přejít na další video</span>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
@@ -307,11 +314,11 @@
                             </svg>
                         </div>
                         <div>
-                            <h1 class="text-2xl font-bold text-white">Thank you for your participation!</h1>
+                            <h1 class="text-2xl font-bold text-white">Děkujeme za vaši účast!</h1>
                             <p class="text-slate-400 text-sm mt-0.5">
-                                Nickname: <strong id="summary-nickname" class="text-white"></strong> • 
-                                Marked videos: <strong id="summary-video-count" class="text-white"></strong> • 
-                                Total timestamps: <strong id="summary-total-stamps" class="text-indigo-400"></strong>
+                                Přezdívka: <strong id="summary-nickname" class="text-white"></strong> • 
+                                Zpracovaná videa: <strong id="summary-video-count" class="text-white"></strong> • 
+                                Celkem značek: <strong id="summary-total-stamps" class="text-indigo-400"></strong>
                             </p>
                         </div>
                     </div>
@@ -321,15 +328,15 @@
                 <div class="mt-6">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
                         <div class="flex items-center space-x-2">
-                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider mr-2">Output format:</span>
-                            <button onclick="setExportFormat('text')" id="fmt-btn-text" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition">Readable text</button>
-                            <button onclick="setExportFormat('seconds')" id="fmt-btn-seconds" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Text (seconds)</button>
+                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider mr-2">Formát výstupu:</span>
+                            <button onclick="setExportFormat('text')" id="fmt-btn-text" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition">Čitelný text</button>
+                            <button onclick="setExportFormat('seconds')" id="fmt-btn-seconds" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Text (v sekundách)</button>
                             <button onclick="setExportFormat('json')" id="fmt-btn-json" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">JSON</button>
                             <button onclick="setExportFormat('csv')" id="fmt-btn-csv" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">CSV</button>
                         </div>
 
                         <span id="copy-feedback" class="text-xs text-emerald-400 font-medium opacity-0 transition-opacity">
-                            ✓ Copied to clipboard!
+                            ✓ Zkopírováno do schránky!
                         </span>
                     </div>
 
@@ -347,14 +354,14 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
                             </svg>
-                            <span>Copy to clipboard</span>
+                            <span>Zkopírovat do schránky</span>
                         </button>
 
                         <button onclick="downloadExportFile()" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white font-medium px-5 py-3 rounded-xl border border-slate-700 flex items-center justify-center space-x-2 transition">
                             <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                             </svg>
-                            <span id="btn-download-label">Download as .txt</span>
+                            <span id="btn-download-label">Stáhnout jako .txt</span>
                         </button>
                     </div>
 
@@ -362,7 +369,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                         </svg>
-                        <span>Reset</span>
+                        <span>Resetovat</span>
                     </button>
                 </div>
 
@@ -380,40 +387,62 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                 </svg>
-                <h3 class="text-lg font-bold text-white">Wish to start over?</h3>
+                <h3 class="text-lg font-bold text-white">Chcete začít znovu?</h3>
             </div>
             <p class="text-sm text-slate-400 mb-6">
-                This will delete all progress and you will return to title screen.
+                Tímto smažete veškerý dosavadní postup a vrátíte se na úvodní obrazovku.
             </p>
             <div class="flex justify-end space-x-3">
                 <button onclick="closeResetModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium transition">
-                    Cancel
+                    Zrušit
                 </button>
                 <button onclick="confirmResetSession()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-semibold transition">
-                    Yes, reset
+                    Ano, resetovat
                 </button>
             </div>
         </div>
     </div>
 
     <!-- ========================================== -->
+    <!-- INTERAKTIVNÍ PRŮVODCE OVLÁDÁNÍM (TOUR)     -->
+    <!-- ========================================== -->
+
+    <!-- Tlačítko pro spuštění průvodce (vlevo dole) -->
+    <button id="btn-start-tour" onclick="startTour()" class="hidden fixed bottom-6 left-6 z-40 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 px-5 rounded-2xl shadow-lg shadow-indigo-900/50 flex items-center gap-2 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Průvodce a úkol
+    </button>
+
+    <!-- Ztmavení pozadí -->
+    <div id="tour-overlay" class="hidden fixed inset-0 z-[51] bg-slate-950/80 backdrop-blur-sm transition-opacity"></div>
+    
+    <!-- Dynamicky pozicované okno s vysvětlením (lišta) -->
+    <div id="tour-dialog" class="hidden fixed z-[60] bg-slate-900 border border-indigo-500/50 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-5 w-[90%] max-w-md transition-all duration-300">
+        <div class="flex items-center justify-between mb-3">
+            <h4 class="text-indigo-400 font-bold uppercase tracking-wider text-xs">Krok <span id="tour-step-count">1/5</span></h4>
+            <button onclick="endTour()" class="text-slate-500 hover:text-slate-300 p-1 rounded-md transition" title="Zavřít průvodce">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div id="tour-text" class="text-slate-200 text-sm mb-6 leading-relaxed"></div>
+        <div class="flex justify-between items-center mt-2">
+            <button onclick="endTour()" class="text-slate-400 hover:text-rose-400 text-xs font-medium transition">Ukončit návod</button>
+            <button onclick="nextTourStep()" id="tour-next-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-lg transition">Další krok</button>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
     <!-- JAVASCRIPT LOGIKA APLIKACE                 -->
     <!-- ========================================== -->
     <script>
-        /**
-         * ============================================================================
-         * KONFIGURACE VIDEÍ PRO EXPERIMENT (NATVRDO DEFINOVANÁ FRONTA)
-         * ============================================================================
-         */
         const EXPERIMENT_VIDEOS = [
-            // --- 1. ZKUŠEBNÍ VIDEO ---
             {
                 id: "vid_test",
-                name: "Ukázkové video", // Název, který se zobrazí nahoře
-                src: "./videos/watermarked_preview_making_bed.mp4", // ZDE DOPLŇTE CESTU K TESTOVACÍMU VIDEU
-                isTest: true // Tento příznak zajistí označení "TEST" a vyřazení z výsledků
+                name: "Ukázkové video",
+                src: "./videos/watermarked_preview_making_bed.mp4",
+                isTest: true
             },
-            // --- OSTRÁ VIDEA ---
             {
                 id: "vid_01",
                 name: "Video 1",
@@ -426,9 +455,8 @@
             }
         ];
 
-        const STORAGE_KEY = 'timestamp_experiment_session_v2';
+        const STORAGE_KEY = 'timestamp_experiment_session_v3';
 
-        // Hlavní stav aplikace
         let state = {
             nickname: '',
             videos: [],          
@@ -444,11 +472,6 @@
         const timelinePinsContainer = document.getElementById('timeline-pins-container');
 
         window.addEventListener('DOMContentLoaded', () => {
-            const countBadge = document.getElementById('start-video-count');
-            // Počítáme do úvodní obrazovky pouze ostrá videa
-            const realVideoCount = EXPERIMENT_VIDEOS.filter(v => !v.isTest).length;
-            if (countBadge) countBadge.textContent = realVideoCount;
-            
             checkSavedSession();
             setupVideoListeners();
             setupKeyboardShortcuts();
@@ -554,8 +577,11 @@
             document.getElementById('screen-start').classList.add('hidden');
             document.getElementById('screen-annotate').classList.add('hidden');
             document.getElementById('screen-summary').classList.remove('hidden');
+            
+            // Schováme spouštěč průvodce
+            document.getElementById('btn-start-tour').classList.add('hidden');
+            endTour();
 
-            // Filtrování pouze ostrých videí pro výsledné statistiky
             const exportVideos = state.videos.filter(v => !v.isTest);
 
             document.getElementById('summary-nickname').textContent = state.nickname;
@@ -570,31 +596,32 @@
             state.currentVideoIndex = index;
             const currentVideo = state.videos[index];
             
-            // Spočítáme si statistiky pouze pro "ostrá" videa
             const realVideosCount = state.videos.filter(v => !v.isTest).length;
             const realVideoIndex = state.videos.slice(0, index + 1).filter(v => !v.isTest).length;
-            
-            const testBanner = document.getElementById('test-video-banner');
 
-            // Aktualizace textů v UI (rozlišení Test vs. Ostré video)
             if (currentVideo.isTest) {
                 document.getElementById('header-progress').textContent = `Testovací video`;
                 document.getElementById('video-badge-index').textContent = `TEST`;
                 document.getElementById('video-badge-index').classList.replace('text-indigo-400', 'text-amber-400');
                 document.getElementById('video-badge-index').classList.replace('border-indigo-500/30', 'border-amber-500/30');
                 
-                // Zobrazit výrazný banner (změníme na flex z hidden)
-                testBanner.classList.remove('hidden');
-                testBanner.classList.add('flex');
+                // Zobrazíme spouštěč průvodce
+                document.getElementById('btn-start-tour').classList.remove('hidden');
+
+                // --- AUTOMATICKÉ SPUŠTĚNÍ PRŮVODCE ---
+                setTimeout(() => {
+                    startTour();
+                }, 400);
+                
             } else {
-                document.getElementById('header-progress').textContent = `Video ${realVideoIndex} of ${realVideosCount}`;
+                document.getElementById('header-progress').textContent = `Video ${realVideoIndex} z ${realVideosCount}`;
                 document.getElementById('video-badge-index').textContent = `#${realVideoIndex}`;
                 document.getElementById('video-badge-index').classList.replace('text-amber-400', 'text-indigo-400');
                 document.getElementById('video-badge-index').classList.replace('border-amber-500/30', 'border-indigo-500/30');
                 
-                // Skrýt výrazný banner
-                testBanner.classList.add('hidden');
-                testBanner.classList.remove('flex');
+                // Schováme spouštěč průvodce u normálních videí
+                document.getElementById('btn-start-tour').classList.add('hidden');
+                endTour();
             }
             
             document.getElementById('current-video-title').textContent = currentVideo.name;
@@ -611,13 +638,12 @@
             document.getElementById('btn-prev-video').disabled = (index === 0);
             const nextBtnText = document.getElementById('btn-next-video-text');
             
-            // Změna textu na tlačítku "Další" podle toho, zda jde o test
             if (index === state.videos.length - 1) {
-                nextBtnText.textContent = "Submit and finish";
+                nextBtnText.textContent = "Odeslat a dokončit";
             } else if (currentVideo.isTest) {
-                nextBtnText.textContent = "Finish test & start experiment";
+                nextBtnText.textContent = "Dokončit test a spustit experiment";
             } else {
-                nextBtnText.textContent = `Submit and go to next video (${realVideoIndex + 1}/${realVideosCount})`;
+                nextBtnText.textContent = `Odeslat a přejít na další video (${realVideoIndex + 1}/${realVideosCount})`;
             }
 
             renderTimestampsList();
@@ -651,14 +677,26 @@
         function updatePlayButtonUI(isPaused) {
             const textEl = document.getElementById('text-play-toggle');
             const iconEl = document.getElementById('icon-play');
+            const pauseOverlay = document.getElementById('video-paused-overlay');
+
+            if (pauseOverlay) {
+                if (isPaused) {
+                    pauseOverlay.classList.remove('opacity-0');
+                    pauseOverlay.classList.add('opacity-100');
+                } else {
+                    pauseOverlay.classList.remove('opacity-100');
+                    pauseOverlay.classList.add('opacity-0');
+                }
+            }
+
             if (!textEl || !iconEl) return;
 
             if (isPaused) {
-                textEl.textContent = "Play video";
+                textEl.textContent = "Spustit video";
                 iconEl.className = "w-5 h-5 text-emerald-400";
                 iconEl.innerHTML = `<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>`;
             } else {
-                textEl.textContent = "Pause video";
+                textEl.textContent = "Pozastavit";
                 iconEl.className = "w-5 h-5 text-amber-400";
                 iconEl.innerHTML = `<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>`;
             }
@@ -671,6 +709,134 @@
                 videoPlayer.pause();
             }
         }
+
+
+        // =====================================
+        // INTERAKTIVNÍ PRŮVODCE (TOUR)
+        // =====================================
+        const TOUR_STEPS = [
+            {
+                target: 'center',
+                html: `
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-white text-lg">Zkušební video – Úkol a Příklad</h3>
+                        <p>Vaším úkolem je <strong>segmentovat video (rozdělit souvislý děj) do menších smysluplných akcí</strong>. Zaznamenejte čas vždy ve chvíli, kdy jedna akce skončí a začne další.</p>
+                        
+                        <div class="bg-indigo-950/40 p-4 rounded-xl border border-indigo-500/20 shadow-inner text-left">
+                            <h4 class="font-semibold text-indigo-300 mb-2 text-sm">Příklad: Příprava čaje</h4>
+                            <p class="mb-2 text-[13px] text-indigo-100">Děj nerozdělujeme na jednotlivé pohyby rukou, ale na logické celky:</p>
+                            <ol class="list-decimal list-inside text-indigo-200/90 font-medium space-y-1 ml-1 text-[13px]">
+                                <li>Zahřátí vody v konvici</li>
+                                <li>Příprava hrnku a vložení sáčku</li>
+                                <li>Zalití čaje horkou vodou</li>
+                                <li>Sednutí a pití čaje</li>
+                            </ol>
+                            <p class="mt-2 text-indigo-300/80 italic text-[12px] leading-snug">➔ Značku vložíte vždy přesně na přechodu mezi těmito fázemi.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                target: 'btn-record-timestamp',
+                html: '<p>Toto je hlavní tlačítko. Zaznamená timestamp na aktuální čas videa. Lze použít i klávesu <strong>Enter</strong>.</p>'
+            },
+            {
+                target: 'video-container',
+                html: '<p>Kliknutím přímo do videa (nebo stiskem <strong>Mezerníku</strong>) můžete přehrávání kdykoliv pozastavit a znovu spustit.</p>'
+            },
+            {
+                target: 'custom-timeline',
+                html: '<p>Časová osa ukazuje vaše značky. Kliknutím kamkoliv na osu se plynule přesunete na daný moment ve videu.</p>'
+            },
+            {
+                target: 'sidebar-container',
+                html: '<p>Zde uvidíte seznam zaznamenaných časů. Můžete na ně klikat, nebo je v případě chyby rovnou smazat.</p>'
+            }
+        ];
+        
+        let currentTourStep = 0;
+
+        function startTour() {
+            if(!videoPlayer.paused) videoPlayer.pause();
+            document.getElementById('tour-overlay').classList.remove('hidden');
+            document.getElementById('tour-dialog').classList.remove('hidden');
+            currentTourStep = 0;
+            showTourStep();
+        }
+
+        function endTour() {
+            document.getElementById('tour-overlay').classList.add('hidden');
+            document.getElementById('tour-dialog').classList.add('hidden');
+            clearTourHighlight();
+        }
+
+        function showTourStep() {
+            clearTourHighlight();
+            if (currentTourStep >= TOUR_STEPS.length) {
+                endTour();
+                return;
+            }
+            
+            const step = TOUR_STEPS[currentTourStep];
+            const dialog = document.getElementById('tour-dialog');
+            
+            document.getElementById('tour-step-count').textContent = `${currentTourStep + 1}/${TOUR_STEPS.length}`;
+            document.getElementById('tour-text').innerHTML = step.html;
+            
+            if (step.target === 'center') {
+                // Vycentrování krok 1 na střed
+                setTimeout(() => {
+                    const dialogRect = dialog.getBoundingClientRect();
+                    const top = Math.max(16, (window.innerHeight / 2) - (dialogRect.height / 2));
+                    const left = Math.max(16, (window.innerWidth / 2) - (dialogRect.width / 2));
+                    dialog.style.top = `${top}px`;
+                    dialog.style.left = `${left}px`;
+                }, 10);
+            } else {
+                const target = document.getElementById(step.target);
+                if (target) {
+                    target.classList.add('tour-highlight');
+                    target.scrollIntoView({ behavior: 'auto', block: 'center' });
+                    
+                    setTimeout(() => {
+                        const rect = target.getBoundingClientRect();
+                        const dialogRect = dialog.getBoundingClientRect();
+                        let top = 0;
+                        let left = 0;
+                        
+                        if (rect.top + (rect.height / 2) < window.innerHeight / 2) {
+                            top = rect.bottom + 25;
+                        } else {
+                            top = rect.top - dialogRect.height - 25;
+                        }
+                        
+                        left = rect.left + (rect.width / 2) - (dialogRect.width / 2);
+                        
+                        left = Math.max(16, Math.min(left, window.innerWidth - dialogRect.width - 16));
+                        top = Math.max(16, Math.min(top, window.innerHeight - dialogRect.height - 16));
+                        
+                        dialog.style.top = `${top}px`;
+                        dialog.style.left = `${left}px`;
+                    }, 10);
+                }
+            }
+            
+            document.getElementById('tour-next-btn').textContent = (currentTourStep === TOUR_STEPS.length - 1) ? 'Zavřít' : 'Další';
+        }
+
+        function nextTourStep() {
+            currentTourStep++;
+            showTourStep();
+        }
+
+        function clearTourHighlight() {
+            document.querySelectorAll('.tour-highlight').forEach(el => {
+                el.classList.remove('tour-highlight');
+            });
+        }
+
+
+        // =====================================
 
         function skipTime(deltaSeconds) {
             if (!videoPlayer.duration || !isFinite(videoPlayer.duration)) return;
@@ -759,7 +925,7 @@
             const currentVideo = state.videos[state.currentVideoIndex];
             const stamps = currentVideo ? currentVideo.timestamps : [];
 
-            document.getElementById('pins-count-label').textContent = `${stamps.length} ${stamps.length === 1 ? 'Timestamp' : 'Timestamps'}`;
+            document.getElementById('pins-count-label').textContent = `${stamps.length} ${stamps.length === 1 ? 'značka' : (stamps.length >= 2 && stamps.length <= 4 ? 'značky' : 'značek')}`;
 
             if (stamps.length === 0) {
                 clearAllBtn.classList.add('hidden');
@@ -770,7 +936,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <p class="text-sm font-medium text-slate-400">No timestamps yet</p>
+                        <p class="text-sm font-medium text-slate-400">Zatím žádné značky</p>
                     </div>
                 `;
                 return;
@@ -795,7 +961,7 @@
                                 </div>
                             </div>
                         </button>
-                        <button onclick="removeTimestamp(${idx})" title="Click to delete" 
+                        <button onclick="removeTimestamp(${idx})" title="Kliknutím smazat" 
                             class="text-slate-500 hover:text-rose-400 hover:bg-rose-950/40 p-2 rounded-lg transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -889,7 +1055,7 @@
 
             const downloadLabel = document.getElementById('btn-download-label');
             const ext = fmt === 'json' ? '.json' : (fmt === 'csv' ? '.csv' : '.txt');
-            downloadLabel.textContent = `Download as ${ext}`;
+            downloadLabel.textContent = `Stáhnout jako ${ext}`;
 
             generateExportOutput();
         }
@@ -899,26 +1065,25 @@
             const fmt = state.exportFormat;
             let output = '';
 
-            // Odfiltrovat zkušební videa pro exportní výstup
             const exportVideos = state.videos.filter(v => !v.isTest);
 
             if (fmt === 'text') {
-                output += `Nickname: ${state.nickname}\n`;
-                output += `Date: ${new Date().toLocaleString('cs-CZ')}\n`;
+                output += `Přezdívka: ${state.nickname}\n`;
+                output += `Datum: ${new Date().toLocaleString('cs-CZ')}\n`;
                 output += `========================================\n\n`;
 
                 exportVideos.forEach((v, i) => {
                     output += `Video ${i + 1}: ${v.name}\n`;
                     if (v.timestamps.length === 0) {
-                        output += `  (No timestamps)\n`;
+                        output += `  (Žádné značky)\n`;
                     } else {
                         const formattedList = v.timestamps.map(t => formatTime(t)).join(', ');
-                        output += `  Timestamps (${v.timestamps.length}): ${formattedList}\n`;
+                        output += `  Značky (${v.timestamps.length}): ${formattedList}\n`;
                     }
                     output += `\n`;
                 });
             } else if (fmt === 'seconds') {
-                output += `Nickname: ${state.nickname}\n\n`;
+                output += `Přezdívka: ${state.nickname}\n\n`;
                 exportVideos.forEach((v) => {
                     const secList = v.timestamps.map(t => `${t.toFixed(2)}s`).join(', ');
                     output += `${v.name}: ${secList || 'žádné'}\n`;
@@ -936,7 +1101,7 @@
                 };
                 output = JSON.stringify(payload, null, 2);
             } else if (fmt === 'csv') {
-                output = "nickname,video_index,video_name,timestamp_index,timestamp_seconds,timestamp_formatted\n";
+                output = "prezdivka,video_index,video_nazev,zaznam_index,zaznam_sekundy,zaznam_formatovany\n";
                 exportVideos.forEach((v, vIdx) => {
                     if (v.timestamps.length === 0) {
                         output += `"${state.nickname}",${vIdx + 1},"${v.name.replace(/"/g, '""')}","","",""\n`;
@@ -1010,15 +1175,10 @@
             document.getElementById('screen-annotate').classList.add('hidden');
             document.getElementById('screen-summary').classList.add('hidden');
             document.getElementById('screen-start').classList.remove('hidden');
-        }
-
-        function escapeHtml(str) {
-            return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+            
+            // Schovat panely při restartu
+            document.getElementById('btn-start-tour').classList.add('hidden');
+            endTour();
         }
     </script>
 </body>
