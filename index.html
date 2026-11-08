@@ -596,6 +596,22 @@
             document.getElementById('summary-total-stamps').textContent = totalStamps;
 
             generateExportOutput();
+                
+            const payload = {
+                nickname: state.nickname,
+                timestamp: new Date().toISOString(),
+                videos: exportVideos.map((v, idx) => ({
+                    index: idx + 1,
+                    videoName: v.name,
+                    taskType: v.taskType,
+                    events: v.events.map(ev => ({
+                        timeSeconds: ev.time,
+                        timeFormatted: formatTime(ev.time),
+                        label: ev.label
+                    }))
+                }))
+            };
+            sendResultsToGoogleSheet(payload);
         }
 
         function loadVideoByIndex(index) {
@@ -1242,6 +1258,24 @@
             // Schovat panely při restartu
             document.getElementById('btn-start-tour').classList.add('hidden');
             endTour();
+        }
+            // Function to automatically send final experiment results to Google Sheets
+        async function sendResultsToGoogleSheet(payload) {
+            const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyh63w6aK1wtNa5SIVUi9Pr9gbkEAaVmSt1hHpNLiqwSaBeKV_8aFxtHpQmORlowiEi/exec";
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    mode: "no-cors", // Allows sending cross-domain requests without CORS blocks
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+                console.log("Data successfully sent to Google Sheet!");
+            } catch (err) {
+                console.error("Error sending data to Google Sheet:", err);
+            }
         }
     </script>
 </body>
