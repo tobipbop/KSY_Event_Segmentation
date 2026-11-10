@@ -236,7 +236,7 @@
                             <div class="w-3.5 h-3.5 rounded-full bg-rose-400 group-hover:scale-125 transition-transform shadow-sm shadow-rose-500"></div>
                             <span class="text-lg tracking-wide">Zaznamenat značku</span>
                             <kbd class="hidden sm:inline-block ml-2 px-2.5 py-1 text-xs font-mono bg-black/30 text-indigo-200 rounded-md border border-white/10">
-                                Enter / Klikněte sem
+                                Enter
                             </kbd>
                         </button>
 
@@ -358,13 +358,6 @@
                             <span id="btn-download-label">Stáhnout jako .txt</span>
                         </button>
                     </div>
-
-                    <button onclick="openResetModal()" class="w-full sm:w-auto text-rose-400 hover:text-white hover:bg-rose-600/20 border border-rose-500/30 font-medium px-5 py-3 rounded-xl flex items-center justify-center space-x-2 transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                        </svg>
-                        <span>Resetovat</span>
-                    </button>
                 </div>
 
             </div>
@@ -782,7 +775,7 @@
                         <p>Vaším prvním úkolem je <strong>segmentovat video (rozdělit souvislý děj) do menších smysluplných akcí</strong>. Zaznamenejte čas vždy ve chvíli, kdy jedna akce skončí a začne další.</p>
                         
                         <div class="bg-indigo-950/40 p-4 rounded-xl border border-indigo-500/20 shadow-inner text-left">
-                            <h4 class="font-semibold text-indigo-300 mb-2 text-sm">Příklad: Pečení</h4>
+                            <h4 class="font-semibold text-indigo-300 mb-2 text-sm">Příklad: Vaření</h4>
                             <p class="mb-2 text-[13px] text-indigo-100">Děj rozdělujeme na jednotlivé akce:</p>
                             <ol class="list-decimal list-inside text-indigo-200/90 font-medium space-y-1 ml-1 text-[13px]">
                                 <li>Oddělání poklice</li>
@@ -907,7 +900,7 @@
                 }
             }
             
-            document.getElementById('tour-next-btn').textContent = (currentTourStep === activeTourSteps.length - 1) ? 'Rozumím, jdeme na to' : 'Další krok';
+            document.getElementById('tour-next-btn').textContent = (currentTourStep === activeTourSteps.length - 1) ? 'Zavřít' : 'Další';
         }
 
         function nextTourStep() {
