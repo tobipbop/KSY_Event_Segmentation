@@ -183,7 +183,7 @@
 
                     <!-- Kontejner videa -->
                     <div id="video-container" class="relative bg-black rounded-2xl overflow-hidden border border-slate-800 shadow-2xl aspect-video flex items-center justify-center group">
-                        <video id="video-player" onclick="togglePlayPause()" class="w-full h-full max-h-[65vh] object-contain cursor-pointer" playsinline tabindex="-1"></video>
+                        <video id="video-player" muted onclick="togglePlayPause()" class="w-full h-full max-h-[65vh] object-contain cursor-pointer" playsinline tabindex="-1"></video>
                         
                         <!-- Ztmavení a ikona Play při pozastavení -->
                         <div id="video-paused-overlay" class="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300">
@@ -424,7 +424,6 @@
             <button onclick="nextTourStep()" id="tour-next-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-lg transition">Další krok</button>
         </div>
     </div>
-    <!-- pls work--->
 
     <!-- ========================================== -->
     <!-- JAVASCRIPT LOGIKA APLIKACE                 -->
@@ -435,27 +434,57 @@
             {
                 id: "vid_test_1",
                 name: "Ukázkové video (Značkování)",
-                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/10558008-uhd_4096_2160_25fps.mp4",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/P02_11.MP4",
                 isTest: true,
                 taskType: "timestamp"
             },
             {
                 id: "vid_01",
                 name: "Video 1 (Značkování)",
-                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/14919696_1920_1080_50fps.mp4",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/4560213-hd_1920_1080_30fps.mp4",
+                taskType: "timestamp"
+            },
+            {
+                id: "vid_02",
+                name: "Video 2 (Značkování)",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/P02_08.MP4",
+                taskType: "timestamp"
+            },
+            {
+                id: "vid_03",
+                name: "Video 3 (Značkování)",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/15448985-hd_1920_1080_60fps.mp4",
+                taskType: "timestamp"
+            },
+            {
+                id: "vid_04",
+                name: "Video 4 (Značkování)",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/6174387-hd_1920_1080_30fps.mp4",
                 taskType: "timestamp"
             },
             {
                 id: "vid_test_2",
                 name: "Ukázkové video (Pojmenování)",
-                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/15448985-hd_1920_1080_60fps.mp4",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/P02_05.MP4",
                 isTest: true,
                 taskType: "naming"
             },
             {
-                id: "vid_02",
-                name: "Video 2 (Pojmenování)",
-                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/4560213-hd_1920_1080_30fps.mp4",
+                id: "vid_05",
+                name: "Video 5 (Značkování + pojmenování)",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/P02_14.MP4",
+                taskType: "naming"
+            },
+            {
+                id: "vid_06",
+                name: "Video 6 (Značkování + pojmenování)",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/14919696_1920_1080_50fps.mp4",
+                taskType: "naming"
+            },
+            {
+                id: "vid_07",
+                name: "Video 7 (Značkování + pojmenování)",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/7269158-uhd_3840_2160_25fps.mp4",
                 taskType: "naming"
             }
         ];
@@ -753,13 +782,16 @@
                         <p>Vaším prvním úkolem je <strong>segmentovat video (rozdělit souvislý děj) do menších smysluplných akcí</strong>. Zaznamenejte čas vždy ve chvíli, kdy jedna akce skončí a začne další.</p>
                         
                         <div class="bg-indigo-950/40 p-4 rounded-xl border border-indigo-500/20 shadow-inner text-left">
-                            <h4 class="font-semibold text-indigo-300 mb-2 text-sm">Příklad: Příprava čaje</h4>
-                            <p class="mb-2 text-[13px] text-indigo-100">Děj nerozdělujeme na jednotlivé pohyby rukou, ale na logické celky:</p>
+                            <h4 class="font-semibold text-indigo-300 mb-2 text-sm">Příklad: Pečení</h4>
+                            <p class="mb-2 text-[13px] text-indigo-100">Děj rozdělujeme na jednotlivé akce:</p>
                             <ol class="list-decimal list-inside text-indigo-200/90 font-medium space-y-1 ml-1 text-[13px]">
-                                <li>Zahřátí vody v konvici</li>
-                                <li>Příprava hrnku a vložení sáčku</li>
-                                <li>Zalití čaje horkou vodou</li>
-                                <li>Sednutí a pití čaje</li>
+                                <li>Oddělání poklice</li>
+                                <li>Zamíchání jídla</li>
+                                <li>Vypnutí budíku</li>
+                                <li>Ochutnání jídla</li>
+                                <li>Zamíchání jídla</li>
+                                <li>Vypnutí sporáku</li>
+                                <li>Přemístění pánve</li>
                             </ol>
                             <p class="mt-2 text-indigo-300/80 italic text-[12px] leading-snug">➔ Značku vložíte vždy přesně na přechodu mezi těmito fázemi.</p>
                         </div>
@@ -801,7 +833,7 @@
             },
             {
                 target: 'sidebar-container',
-                html: '<p>Zde v panelu se pro každý zaznamenaný čas okamžitě zobrazí i <strong>textové pole</strong>. Do něj stručně zapište, jaký děj segment reprezentuje (např. "Zalévá kávu").</p>'
+                html: '<p>Zde v panelu se pro každý zaznamenaný čas okamžitě zobrazí i <strong>textové pole</strong>. Do něj stručně zapište, jaký děj segment reprezentuje (např. "Nalévá vodu").</p>'
             }
         ];
         
