@@ -2,53 +2,73 @@
 
 Tereza Navrátilová, Tobias Lemeer
 
+Tento projekt se zabývá segmentací událostí ve videu (Event Segmentation) a zkoumá, jak lidští pozorovatelé přirozeně dělí spojitý vizuální děj na menší, smysluplné celky.
+
 **Hypotézy:**
 
 1. U videí s pomalým tempem očekáváme menší rozptyl segmentačních hranic mezi respondenty.   
-2. AI se při segmentaci videí zaměřuje primárně na fyzické pohyby v obraze, zatímco lidští respondenti vycházejí z kontextu scény. 
+2. Předpokládáme, že AI se při segmentaci videí zaměřuje primárně na fyzické pohyby v obraze, zatímco lidští respondenti vycházejí více z kontextu a logické návaznosti scény. 
 
 **Co budeme měřit?**
 
-- Timestamps respondentů u jednotlivých videí  
-- Průměrný interval segmentace u videí \-\> jestli spadne pod určitý threshold nebo jestli respondent nesegmentuje video vůbec, tak nebudou data akceptována.  
-- Před puštěním samotných videí tak prvně vysvětlíme jak video segmentovat a co klikat. 
+- Timestamps respondentů u jednotlivých videí
+- Textový popis (pojmenování) vyznačených segmentů u některých videí.
 
 **Co použijeme za videa? Jak dlouhá budou?**
-
-- Videa budou dlouhá do ? minut (vyzkoušíme na modelu a uvidíme co nám to dovolí)  
-- Strukturované video: Například Morning routine, uvařit si kávu / čaj. Video kde je evidentní kdy nějaký event začíná a končí.   
-- Méně strukturované video: Video teamového sportu, sešlost v klubu, školní jídelna, first person view procházka klidným parkem. Potřebujem, aby nebylo z videa hned evidentní, kdy začíná a kdy končí určitý event. Tím dobře odlišíme naše experimenty. 
+ 
+- Strukturovaná videa: Například příprava kávy nebo čaje. Video kde je evidentní kdy nějaký segment začíná a končí.   
+- Méně strukturovaná videa: Například video teamového sportu nebo sešlost v klubu, kde není zcela jednoznačné, kdy začíná a kdy končí určitý segment.
 
 **Jaké budou úvodní instrukce pro člověka a jaký bude prompt pro AI?**
 
 * Člověk:   
-  “Your Task You will watch a series of short videos. Your goal is to divide each video into specific events by pressing \[SPACEBAR / BUTTON\].  
-    
-  How to Mark Events  
-  Press \[SPACEBAR / BUTTON\] at the exact moment one event changes into another.  
-    
-  Example: A person performing a morning routine would be divided into \-\> Washing their face / brushing their teeth / putting on perfume.   
-    
-  Try it on this video when you are ready:  
-  (Video morning routine někoho)  
-    
-  Když do nějakého určitého limitu (3 sekundy) oddělí video špatně, zobrazí se pop-up:   
-  Try again / Continue anyway”  
-* AI:  
-  “Watch the provided video. Your task is to divide the video into specific events. Identify the exact moments where one meaningful unit of activity ends and another begins. Output only a comma-separated list of timestamps in seconds (e.g., 12.5, 34.0, 89.2). Do not provide any descriptions or additional text.”
+  “Budete sledovat sérii krátkých videí. Ve dvou různých fázích experimentu budete mít za úkol rozdělit souvislý děj na konkrétní události (pomocí časových značek) a následně tyto segmenty také pojmenovat.
+
+  **1. část**
+  
+  Vaším prvním úkolem je segmentovat video (rozdělit souvislý děj) do menších smysluplných akcí. Zaznamenejte čas vždy ve chvíli, kdy jedna akce skončí a začne další.
+  
+  Příklad: Vaření
+  Děj rozdělujeme na jednotlivé akce:
+    - Oddělání poklice
+    - Zamíchání jídla
+    - Vypnutí budíku
+    - Ochutnání jídla
+    - Zamíchání jídla
+    - Vypnutí sporáku
+    - Přemístění pánve
+
+  ➔ Značku vložíte vždy přesně na přechodu mezi těmito fázemi.
+
+  **2. část**
+  
+  Nyní je Váš úkol rozšířen o pojmenování Vámi zaznamenaných úseků ve videu.
+  Kromě přesného rozdělení děje pomocí časových značek musíte jednotlivé úseky také stručně pojmenovat.
+  Ve chvíli kdy stisknete záznam času (Enter), aplikace vytvoří pro tento úsek textové pole pro název segmentu.
+  Do něj stručně zapište, jaký děj segment reprezentuje (např. "Nalévá vodu").
+  "  
+* AI:
+  “
+  **1. část**
+  
+  Watch the provided video. Your task is to divide the video into specific events. Identify the exact moments where one meaningful unit of activity ends and another begins. Output only a comma-separated list of timestamps in seconds (e.g., 12.5, 34.0, 89.2). Do not provide any descriptions or additional text.
+
+  **2. část**
+  Watch the provided video. Your task is to divide the video into specific events and name those events. Identify the exact moments where one meaningful unit of activity ends and another begins. Output only a comma-separated list of timestamps in seconds and a string next to each timestamp containing a brief description of the segment (e. g. "Pouring water").
+  ”
 
 **Na jakou věkovou skupinu / kategorii se zaměříme.**  
-Zaměříme se na young adults / studenty. 
+Zaměříme se na studenty. 
 
 **V jakém prostředí budeme experiment s lidmi provádět**  
-Libovolné prostředí na počítači. 
+Libovolné prostředí s přístupem k počítači. 
 
 **Jak přesně bude test vypadat:**  
-Plánujem webovou aplikaci  
-Prvně bude zadání nějakých údajů abychom mohli rozeznat respondenty (Username).   
-Poté bude následovat úvodní vysvětlení event segmentation s ukázkovým videem a přesný postup, jak aplikaci používat a na co se zaměřit.  
-Následují videa, na která se budeme soustředit (strukturované, nestrukturované), přičemž mezi videi  bude pauza na oddech. Při segmentaci budeme shromažďovat timestampy, kdy se respondent rozhodl video oddělit a z toho měřit potřebná data.   
-Poslední slide bude výpis jejich Username, timestampy u videí a nějaký způsob jak nám tento výpis poslat (ať už mailem nebo do sheets).
+Webová aplikace s těmito částmi:
+* Identifikace: Účastník si zvolí unikátní přezdívku pro zachování anonymity.
+* Tutoriál: Před samotným měřením projde uživatel interaktivním průvodcem a ukázkovým videem, kde si vyzkouší mechaniku segmentace (stisk mezerníku při změně děje) a pochopí princip rozdělování.
+* Měření: Účastník projde sérií testovacích videí. Aplikace poskytuje okamžitou vizuální odezvu při záznamu času a umožňuje případné smazání omylem vytvořených značek.
+* Export dat: Na závěr aplikace vygeneruje souhrnný report (časové značky a popisky), který lze automaticky stáhnout jako CSV/JSON, případně je odeslán do sdílené databáze.
 
 ![][image1]  
 
