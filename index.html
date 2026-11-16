@@ -271,15 +271,15 @@
                     </div>
 
                     <!-- Patička s tlačítkem pro přechod na další video -->
-                    <div class="p-4 border-t border-slate-800 bg-slate-900/90 rounded-b-2xl space-y-2">
-                        <div class="flex justify-between items-center text-xs text-slate-400 mb-2">
-                            <button id="btn-prev-video" onclick="goToPreviousVideo()" class="text-slate-400 hover:text-white flex items-center gap-1 disabled:opacity-30 disabled:pointer-events-none transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                                Předchozí video
-                            </button>
-                        </div>
+ <!-- Patička s tlačítkem pro přechod na další video -->
+                    <div class="p-4 border-t border-slate-800 bg-slate-900/90 rounded-b-2xl space-y-3">
+                        <p class="text-xs text-amber-400/90 bg-amber-950/30 border border-amber-500/20 rounded-lg px-3 py-2 flex items-center gap-2">
+                            <svg class="w-4 h-4 flex-shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <span>Po odeslání se již nelze vrátit k předchozímu videu.</span>
+                        </p>
 
                         <button id="btn-next-video" onclick="confirmAndNextVideo()" 
+                        
                             class="w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3.5 px-5 rounded-xl shadow-lg shadow-emerald-600/20 flex items-center justify-center space-x-2 transition">
                             <span id="btn-next-video-text">Odeslat a přejít na další video</span>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -434,13 +434,13 @@
             {
                 id: "vid_01",
                 name: "Video 1 (Značkování)",
-                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/4560213-hd_1920_1080_30fps.mp4",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/P02_08.MP4",
                 taskType: "timestamp"
             },
             {
                 id: "vid_02",
                 name: "Video 2 (Značkování)",
-                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/P02_08.MP4",
+                src: "https://github.com/tobipbop/KSY_Event_Segmentation/releases/download/v1.0-videos/4560213-hd_1920_1080_30fps.mp4",
                 taskType: "timestamp"
             },
             {
@@ -618,22 +618,6 @@
             document.getElementById('summary-total-stamps').textContent = totalStamps;
 
             generateExportOutput();
-                
-            const payload = {
-                nickname: state.nickname,
-                timestamp: new Date().toISOString(),
-                videos: exportVideos.map((v, idx) => ({
-                    index: idx + 1,
-                    videoName: v.name,
-                    taskType: v.taskType,
-                    events: v.events.map(ev => ({
-                        timeSeconds: ev.time,
-                        timeFormatted: formatTime(ev.time),
-                        label: ev.label
-                    }))
-                }))
-            };
-            sendResultsToGoogleSheet(payload);
         }
 
         function loadVideoByIndex(index) {
@@ -1098,6 +1082,33 @@
 
         function confirmAndNextVideo() {
             saveStateToLocalStorage();
+
+            const currentVideo = state.videos[state.currentVideoIndex];
+
+            // Pokud to není testovací video, odešleme data hned teď
+            if (currentVideo && !currentVideo.isTest) {
+                const realVideos = state.videos.filter(v => !v.isTest);
+                const realIndex = realVideos.findIndex(v => v.id === currentVideo.id) + 1;
+
+                const payload = {
+                    nickname: state.nickname,
+                    timestamp: new Date().toISOString(),
+                    status: (state.currentVideoIndex === state.videos.length - 1) ? "completed" : "in_progress",
+                    videos: [{
+                        index: realIndex,
+                        videoName: currentVideo.name,
+                        taskType: currentVideo.taskType,
+                        events: currentVideo.events.map(ev => ({
+                            timeSeconds: ev.time,
+                            timeFormatted: formatTime(ev.time),
+                            label: ev.label
+                        }))
+                    }]
+                };
+
+                sendResultsToGoogleSheet(payload);
+            }
+
             if (state.currentVideoIndex < state.videos.length - 1) {
                 loadVideoByIndex(state.currentVideoIndex + 1);
             } else {
