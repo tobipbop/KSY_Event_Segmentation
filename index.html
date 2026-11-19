@@ -278,14 +278,24 @@
                             <span>Po odeslání se již nelze vrátit k předchozímu videu.</span>
                         </p>
 
-                        <button id="btn-next-video" onclick="confirmAndNextVideo()" 
-                        
+                        <div id="next-video-wrapper" class="relative">
+                        <div id="next-video-confirm-popover" class="hidden absolute bottom-full left-0 right-0 mb-3 z-30 bg-slate-800 border border-slate-600 rounded-xl p-3.5 shadow-2xl">
+                            <p class="text-sm font-semibold text-white">Opravdu chcete pokračovat?</p>
+                            <p class="text-xs text-slate-300 mt-0.5 mb-3">Po odeslání se nelze vrátit zpět.</p>
+                            <div class="flex justify-end space-x-2">
+                                <button type="button" onclick="toggleNextConfirm(false)" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium">Zrušit</button>
+                                <button type="button" onclick="toggleNextConfirm(false); confirmAndNextVideo();" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">Ano, odeslat</button>
+                            </div>
+                        </div>
+
+                        <button id="btn-next-video" type="button" onclick="toggleNextConfirm()"
                             class="w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold py-3.5 px-5 rounded-xl shadow-lg shadow-emerald-600/20 flex items-center justify-center space-x-2 transition">
                             <span id="btn-next-video-text">Odeslat a přejít na další video</span>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                         </button>
+                    </div>
                     </div>
                 </div>
 
@@ -1078,6 +1088,17 @@
                 timelinePinsContainer.appendChild(pin);
             });
         }
+
+        function toggleNextConfirm(forceState) {
+            const popover = document.getElementById('next-video-confirm-popover');
+            const show = typeof forceState === 'boolean' ? forceState : popover.classList.contains('hidden');
+            popover.classList.toggle('hidden', !show);
+        }
+
+        document.addEventListener('click', (e) => {
+            const wrapper = document.getElementById('next-video-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) toggleNextConfirm(false);
+        });
 
         function confirmAndNextVideo() {
             saveStateToLocalStorage();
